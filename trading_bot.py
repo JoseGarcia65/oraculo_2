@@ -59,3 +59,30 @@ if __name__ == "__main__":
     trade = generar_pronostico()
     enviar_correo(trade)
     print("Correo enviado con éxito.")
+def actualizar_web(pronostico):
+    # Leemos el archivo index.html
+    with open("index.html", "r", encoding="utf-8") as f:
+        contenido = f.read()
+
+    # Reemplazamos los valores viejos por los nuevos (usando marcadores o buscando el texto)
+    # Una forma sencilla es generar el HTML entero desde Python:
+    nuevo_html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head><title>Forex Live</title></head>
+    <body style="background: #131722; color: white; text-align: center;">
+        <h1>Precio Real: {pronostico['entrada']}</h1>
+        <p>TP: {pronostico['tp']} | SL: {pronostico['sl']}</p>
+        <p>Última actualización: {pronostico['razon']}</p>
+    </body>
+    </html>
+    """
+    
+    with open("index.html", "w", encoding="utf-8") as f:
+        f.write(nuevo_html)
+
+# Llama a esta función dentro de tu bloque main
+if __name__ == "__main__":
+    trade = generar_pronostico()
+    enviar_correo(trade)
+    actualizar_web(trade) # <--- Nueva línea
