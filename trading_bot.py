@@ -35,53 +35,89 @@ def generar_pronostico():
     }
 
 def actualizar_index_html(p):
+    # Reemplaza 'TU_USUARIO', 'TU_REPO' y 'TU_TOKEN' con tus datos reales
     html_content = f"""
     <!DOCTYPE html>
     <html lang="es">
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Forex Live Bot | Dashboard</title>
+        <title>Forex Intelligence Hub</title>
         <style>
-            body {{ background-color: #131722; color: #d1d4dc; font-family: sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }}
-            .container {{ display: flex; flex-wrap: wrap; gap: 20px; max-width: 1200px; width: 100%; justify-content: center; }}
-            .card {{ background: #1e222d; border: 1px solid #434651; padding: 25px; border-radius: 12px; flex: 1 1 300px; max-width: 350px; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }}
-            .signal-badge {{ background-color: {p['color']}; color: white; padding: 10px 20px; border-radius: 8px; font-weight: bold; font-size: 1.2rem; display: inline-block; margin-bottom: 15px; text-transform: uppercase; }}
-            .price {{ font-size: 2.8rem; color: #ffffff; font-family: monospace; margin: 10px 0; }}
-            .chart-container {{ flex: 2 1 600px; height: 500px; background: #1e222d; border: 1px solid #434651; border-radius: 12px; overflow: hidden; }}
-            .label {{ color: #787b86; font-size: 0.9rem; }}
-            .value {{ font-weight: bold; font-size: 1.3rem; }}
+            body {{ background-color: #131722; color: #d1d4dc; font-family: sans-serif; margin: 0; padding: 20px; }}
+            .layout-grid {{ display: grid; grid-template-columns: 1fr 2fr; gap: 20px; max-width: 1400px; margin: 0 auto; }}
+            .card {{ background: #1e222d; border: 1px solid #434651; padding: 25px; border-radius: 12px; text-align: center; }}
+            .btn-update {{ 
+                background: #2962ff; color: white; border: none; padding: 15px 25px; 
+                border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 20px;
+                transition: background 0.3s;
+            }}
+            .btn-update:hover {{ background: #1e4bd8; }}
+            .btn-update:disabled {{ background: #434651; cursor: not-allowed; }}
+            /* ... (resto de estilos anteriores) ... */
         </style>
     </head>
     <body>
-        <h1 style="margin-bottom:30px;">Panel de Control Forex 2026</h1>
-        <div class="container">
+        <h1 style="text-align:center;">Forex Intelligence Hub 2026</h1>
+        
+        <div class="layout-grid">
             <div class="card">
-                <div class="signal-badge">{p['accion']}</div>
-                <h2 style="margin:0;">{p['par']}</h2>
-                <div class="price">{p['precio']}</div>
-                <hr style="border: 0; border-top: 1px solid #434651; margin: 20px 0;">
-                <p><span class="label">🎯 Take Profit:</span> <br><span class="value" style="color:#26a69a">{p['tp']}</span></p>
-                <p><span class="label">🛑 Stop Loss:</span> <br><span class="value" style="color:#ef5350">{p['sl']}</span></p>
-                <div class="label" style="margin-top:20px;">Actualizado: {p['fecha']} (UTC)</div>
+                <div style="background:{p['color']}; padding:10px; border-radius:8px; margin-bottom:15px; font-weight:bold;">{p['accion']}</div>
+                <h2>{p['par']}</h2>
+                <div style="font-size:2.5rem; margin:10px 0;">{p['precio']}</div>
+                
+                <button id="updateBtn" class="btn-update" onclick="triggerUpdate()">🔄 ACTUALIZAR ANÁLISIS AHORA</button>
+                
+                <div id="statusMsg" style="margin-top:10px; font-size:0.8rem; color:#787b86;"></div>
+
+                <div style="text-align:left; background:#2a2e39; padding:15px; border-radius:8px; margin-top:20px; font-size:0.9rem;">
+                    <strong>Análisis:</strong> {p['razon']}
+                </div>
             </div>
 
-            <div class="chart-container">
-                <div id="tradingview_widget" style="height:100%;width:100%"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                <script type="text/javascript">
-                new TradingView.widget({{
-                    "autosize": true,
-                    "symbol": "FX:GBPUSD",
-                    "interval": "60",
-                    "theme": "dark",
-                    "style": "1",
-                    "locale": "es",
-                    "container_id": "tradingview_widget"
-                }});
-                </script>
+            <div style="height:500px; background:#1e222d; border-radius:12px; overflow:hidden;">
+                <!-- Widget de TradingView -->
+                <div id="tv_chart" style="height:100%;"></div>
             </div>
         </div>
+
+        <script>
+        async function triggerUpdate() {{
+            const btn = document.getElementById('updateBtn');
+            const msg = document.getElementById('statusMsg');
+            btn.disabled = true;
+            msg.innerText = "Enviando señal a GitHub...";
+
+            // CONFIGURACIÓN (RELLENA ESTO)
+            const GITHUB_TOKEN = "TU_TOKEN"; 
+            const OWNER = "JoseGarcia65";
+            const REPO = "oraculo_2";
+            const WORKFLOW_ID = "main.yml"; 
+
+            try {{
+                const response = await fetch(`https://api.github.com/repos/${{OWNER}}/${{REPO}}/actions/workflows/${{WORKFLOW_ID}}/dispatches`, {{
+                    method: 'POST',
+                    headers: {{
+                        'Authorization': `Bearer ${{GITHUB_TOKEN}}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    }},
+                    body: JSON.stringify({{ ref: 'main' }})
+                }});
+
+                if (response.ok) {{
+                    msg.innerText = "🚀 ¡Bot despertado! La web se actualizará en 1 minuto.";
+                    msg.style.color = "#26a69a";
+                }} else {{
+                    throw new Error();
+                }}
+            }} catch (e) {{
+                msg.innerText = "❌ Error al conectar. Revisa tu Token.";
+                msg.style.color = "#ef5350";
+                btn.disabled = false;
+            }}
+        }}
+        </script>
+        <!-- ... (resto del HTML y Scripts de TradingView) ... -->
     </body>
     </html>
     """
