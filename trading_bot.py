@@ -117,7 +117,24 @@ def actualizar_index_html(p):
                             headers: {{ 'Authorization': `Bearer ${{token}}`, 'Accept': 'application/vnd.github.v3+json' }},
                             body: JSON.stringify({{ ref: 'main' }})
                         }});
-                        if(res.ok) alert("🚀 ¡Bot despertado! Refresca en 1 minuto.");
+if(res.ok) {
+    alert("🚀 ¡Bot despertado! La página se recargará sola en 60 segundos.");
+    setTimeout(() => {
+        location.reload(); // Esto recarga la página automáticamente
+    }, 60000); // 60000 milisegundos = 1 minuto
+}
+
+
+
+
+
+
+
+                        
+
+ 
+
+                        
                         else alert("❌ Error. Token inválido o configuración incorrecta.");
                     }}
                 </script>
