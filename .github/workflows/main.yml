@@ -1,6 +1,29 @@
-name: BOT-TRADING-ACTIVO
+name: BOT-TRADING-ACTIV
 
 on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 7 * * *'
+    - cron: '30 12 * * *'
+    - cron: '30 23 * * *'
+
+# AQUÍ AÑADIMOS LA SOLUCIÓN
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+      
+      # ... resto de tus pasos (Install, Run, Push) ...
   workflow_dispatch: # Esto hará que aparezca el botón "Run workflow" de inmediato
 
 jobs:
