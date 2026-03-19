@@ -88,7 +88,7 @@ def actualizar_index_html(p):
             msg.innerText = "Enviando señal a GitHub...";
 
             // CONFIGURACIÓN (RELLENA ESTO)
-            const GITHUB_TOKEN = "TU_TOKEN"; 
+            const GITHUB_TOKEN = "GIT_TOKEN"; 
             const OWNER = "JoseGarcia65";
             const REPO = "oraculo_2";
             const WORKFLOW_ID = "main.yml"; 
