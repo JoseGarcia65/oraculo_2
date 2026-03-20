@@ -4,6 +4,41 @@ import os
 from email.mime.text import MIMEText
 from datetime import datetime
 
+async function pedirToken() {
+    // Intentar obtener el token guardado en el navegador
+    let token = localStorage.getItem('github_token');
+
+    // Si no existe, pedirlo al usuario
+    if (!token) {
+        token = prompt("Introduce tu Token de GitHub (Se guardará en este navegador):");
+        if (!token) return;
+        localStorage.setItem('github_token', token); // Guardar para la próxima vez
+    }
+
+    const btn = document.getElementById('updateBtn');
+    btn.innerText = "⏳ DESPERTANDO BOT...";
+    btn.disabled = true;
+
+    const res = await fetch('https://api.github.com/repos/JoseGarcia65/oraculo_2/actions/workflows/main.yml/dispatches', {
+        method: 'POST',
+        headers: { 
+            'Authorization': `Bearer ${token}`, 
+            'Accept': 'application/vnd.github.v3+json' 
+        },
+        body: JSON.stringify({ ref: 'main' })
+    });
+
+    if (res.ok) {
+        alert("🚀 ¡Bot despertado! Refrescando en 60s.");
+        setTimeout(() => { location.reload(); }, 60000);
+    } else {
+        alert("❌ Error. Es posible que el token haya caducado.");
+        localStorage.removeItem('github_token'); // Borrar si falló para pedirlo de nuevo
+        btn.innerText = "🔄 ACTUALIZAR AHORA";
+        btn.disabled = false;
+    }
+}
+
 def gestionar_historial(nueva_fecha):
     archivo_historial = "historial.txt"
     # 1. Leer historial existente si existe
